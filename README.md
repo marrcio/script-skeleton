@@ -1,6 +1,8 @@
 # script-skeleton
-A little helper for creating easily skeleton of scripts with hierarchy, to filled later.
-So it generates something like this:
+## What's this?
+A little helper for creating skeleton of scripts with hierarchy, to be filled later with content.
+
+It generates something like this:
 
 ```
 page1
@@ -45,7 +47,7 @@ sfx 2b sfx
 b sfx"""
 ```
 
-or
+or this:
 
 ```
 DFS-ish mode:
@@ -66,17 +68,20 @@ from scriptskeleton.py import ScriptSkeleton
 ```
 
 Give it a sring that resembles `identifier number identifier number`. Very forgiving, don't worry.
+
 Example: "page1 page36", "block 3 block 50", "from the token 37 to the token66"
+
 This will specify the name of the first level blocks and the number of them.
 ```
 ss = ScriptSkeleton('page1 page36')
 ```
 
 Now for every block created (e.g. 36 pages) feed it with internal blocks.
-There are two possible ways of feeding: BFS-ish and DFS-ish.
-For BFS-ish behaviour, give it a NUMBER, ID and end the line with':'. With this, the next NUMBER lines will specify what to give to blocks of ID.
-For DFS-ish behaviour, give it NUMBER ID PARENTHESIS. Anything inside parenthesis will be a son of the current element.
-For a empty element, put a line with a single 0
+
+* There are two possible ways of feeding: BFS-ish and DFS-ish.
+* For BFS-ish behaviour, give it a NUMBER, ID and end the line with':'. With this, the next NUMBER lines will specify what to give to blocks of ID.
+* For DFS-ish behaviour, give it NUMBER ID PARENTHESIS. Anything inside parenthesis will be a son of the current element.
+* For an empty element, put a line with a single 0
 
 Illustrating this:
 ```
@@ -89,14 +94,14 @@ b sfx""")
 ```
 
 Means, in order of lines:
-In the current block, create 5 'pan' which will be described in the next five lines.
-on pan1, attach a 'sq' element.
-on pan2, don't attach anything.
-on pan3, attach a 'sq' which is father of 2 'part' element and a 'sidenode' and a 'sfx'
-on pan4, attach a 'sfx', then 2 'b' then another 'sfx'
-on pan5, attach a 'b' then a 'sfx'
+* In the current block, create 5 'pan' which will be described in the next five lines.
+* on pan1, attach a 'sq' element.
+* on pan2, don't attach anything.
+* on pan3, attach a 'sq' which is father of 2 'part' element and a 'sidenode' and a 'sfx'
+* on pan4, attach a 'sfx', then 2 'b' then another 'sfx'
+* on pan5, attach a 'b' then a 'sfx'
 
-Running this first would create the first example structure.
+Running this would create the first example structure.
 
 Once done, everything can be saved to a 'filename.txt' with:
 ```
