@@ -60,11 +60,22 @@ pan(b sfx)"""
 
 ## How to use
 
-Import the class.
+Clone this repository and install.
+
+```
+$ git clone https://github.com/marrcio/script-skeleton
+```
+
+```
+$ cd script-skeleton
+$ python setup.py install
+OR
+$ pip install ./script-skeleton/
+```
 
 ```
 $ ipython
-from scriptskeleton.py import ScriptSkeleton
+from scriptskeleton import ScriptSkeleton
 ```
 
 Give it a sring that resembles `identifier number identifier number`. Very forgiving, don't worry.
@@ -73,7 +84,7 @@ Example: "page1 page36", "block 3 block 50", "from the token 37 to the token66"
 
 This will specify the name of the first level blocks and the number of them.
 ```
-ss = ScriptSkeleton('page1 page36')
+>>> ss = ScriptSkeleton('page1 page36')
 ```
 
 Now for every block created (e.g. 36 pages) feed it with internal blocks.
@@ -85,7 +96,7 @@ Now for every block created (e.g. 36 pages) feed it with internal blocks.
 
 Illustrating this:
 ```
-ss.feed("""5pan:
+>>> ss.feed("""5pan:
 sq
 0
 sq(2part sidenote) sfx
@@ -103,9 +114,20 @@ Means, in order of lines:
 
 Running this would create the first example structure.
 
+Repeating this process will create all subsequent blocks. You can check the status at any time:
+
+```
+>>> ss.status()
+```
+
+And also, you can always check the preview of an specific block or all the blocks:
+
+```
+>>> ss.preview()   # All that was completed so far
+>>> ss.preview(3)  # The block with number 3 it its name.
+```
+
 Once done, everything can be saved to a 'filename.txt' with:
 ```
 ss.to_file('filename.txt')
 ```
-
-PS. I know this README may be fuzzy and it may not seem as an useful program, but it was mostly written from me, to me. If you wish to use it, good luck.

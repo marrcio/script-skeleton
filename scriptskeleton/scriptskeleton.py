@@ -38,13 +38,13 @@ class ScriptSkeleton:
         assert len(m) is 2
         self.master_unit, self.initial_block = re.search(NAME_AND_NUMBER, m[0]).groups()
         self.final_block = re.search("\d+", m[1]).group()
-        master_padding = len(self.final_block)
+        self.master_padding = len(self.final_block)
         self.initial_block = int(self.initial_block)
         self.final_block = int(self.final_block)
         assert self.initial_block < self.final_block
         self.is_done = False
-        self.children = [Block(self.master_unit + str(num).zfill(master_padding), 0)
-                         for num in range(self.initial_block, final_block+1)]
+        self.children = [Block(self.master_unit + str(num).zfill(self.master_padding), 0)
+                         for num in range(self.initial_block, self.final_block+1)]
         self._block_provider = iter(self.children).__next__
         self.curr_block = None
 
@@ -59,22 +59,34 @@ class ScriptSkeleton:
     def status(self):
         if self.curr_block is None:
             print("Still not started.")
+        elif re.search(self.final_block, self.curr_block.name):
+            print("Work is over.")
         else:
             print("First block is", self.initial_block)
-            print("Current is", self.curr_block.name)
-            print("Final is", self.final_block)
+            print("Just worked block was", self.curr_block.name)
+            print("Final block is", self.final_block)
 
     def preview(self, block_num=None):
         if block_num is None:
             for block in self.children:
-                print(str(block))
-                if block.name == self.curr_block:
+                print(str(block), end="")
+                if block.name == self.curr_block.name:
                     break
         else:
             for block in self.children:
-                if block.name == self.curr_block:
-                    print(str(block))
+                if block.name == self.master_unit + str(block_num).zfill(self.master_padding):
+                    print(str(block), end="")
                     break
+
+    def redo(self, string, block_num=None):
+        to_redo = None
+        if block_num is None:
+            to_redo = self.curr_block
+        else:
+            to_redo = self.children[block_num-self.initial_block]
+        to_redo.clean()
+        to_redo.feed(string)
+        print("Fixed ", to_redo.name + '.')
 
     def to_file(self, filename):
         with open(filename, 'w') as f:
@@ -87,10 +99,14 @@ class Block:
         self.depth = depth
         self.children = []
 
+    def clean(self):
+        self.children = []
+
     def feed(self, string):
         """Feeds from a string to create the hierarchy of one block."""
         counter = Counter()
         string_list = string.split('\n')
+        string_list = [elem for elem in string_list if elem]
         assert len(string_list) is not 0
         it = iter(string_list)
         for line in it:
