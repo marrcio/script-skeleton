@@ -33,7 +33,8 @@ NUM_ID_PARENTHESIS = re.compile(r"""
                                 """, re.VERBOSE)
 
 class ScriptSkeleton:
-    def __init__(self, work_range):
+    def __init__(self, work_range, verbose=None):
+        self.verbose = verbose if verbose is not None else False
         m = re.findall("[a-zA-Z]+\s?\d+", work_range)
         assert len(m) is 2
         self.master_unit, self.initial_block = re.search(NAME_AND_NUMBER, m[0]).groups()
@@ -52,14 +53,17 @@ class ScriptSkeleton:
         try:
             self.curr_block = self._block_provider()
             self.curr_block.feed(string)
-            print("Fed", self.curr_block.name + '.')
+            if self.verbose:
+                self.preview()
+            else:
+                print("Fed", self.curr_block.name + '.')
         except StopIteration:
             print("All pages fed.")
 
     def status(self):
         if self.curr_block is None:
             print("Still not started.")
-        elif re.search(self.final_block, self.curr_block.name):
+        elif re.search(str(self.final_block), self.curr_block.name):
             print("Work is over.")
         else:
             print("First block is", self.initial_block)
@@ -68,10 +72,7 @@ class ScriptSkeleton:
 
     def preview(self, block_num=None):
         if block_num is None:
-            for block in self.children:
-                print(str(block), end="")
-                if block.name == self.curr_block.name:
-                    break
+            print(str(self.curr_block))
         else:
             for block in self.children:
                 if block.name == self.master_unit + str(block_num).zfill(self.master_padding):
