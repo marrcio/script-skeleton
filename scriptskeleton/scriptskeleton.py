@@ -4,7 +4,7 @@ from collections import Counter
 TAB_OF_SPACES = '    '
 NOTHING_INDICATOR = " - Nothing Here!\n"
 NAME_AND_NUMBER = re.compile(r"""
-                             ([a-zA-Z]+)    # A name in a group
+                             ([a-zA-Z!-@]+?)    # A name in a group
                              \s?            # Maybe a space
                              (\d+)          # A number
                              """, re.VERBOSE)
@@ -24,8 +24,8 @@ REST = re.compile(r"""
 
 NUM_ID_PARENTHESIS = re.compile(r"""
                                 (?P<num>\d+)?
-                                (?P<id>[a-zA-Z]+)
-                                (?:
+                                (?P<id>[a-zA-Z!-@]+?)
+                                (?:                         # Don't capture all (with spaces)
                                  (?P<parenthesis>\(.+?\)) |
                                  \s+ |
                                  $
@@ -120,8 +120,7 @@ class Block:
                 _id = m_bfs.group('id')
                 levels = int(_num) if _num is not None else 1
                 for i in range(levels):
-                    counter[_id] += 1
-                    new_block = Block(_id + str(counter[_id]), self.depth + 1)
+                    new_block = self.generate_empty_son(counter, _id)
                     self.children.append(new_block)
                     # Feeds the block with the next line
                     new_block.feed(next(it))
@@ -132,12 +131,19 @@ class Block:
                     _parenthesis = m.group('parenthesis')
                     levels = int(_num) if _num is not None else 1
                     for i in range(levels):
-                        counter[_id] += 1
-                        new_block = Block(_id + str(counter[_id]), self.depth + 1)
+                        new_block = self.generate_empty_son(counter, _id)
                         self.children.append(new_block)
                         # Feeds the block with the content of parenthesis, if it exists
                         if _parenthesis:
                             new_block.feed(_parenthesis[1:-1])
+
+    def generate_empty_son(self, counter, _id):
+        counter[_id] += 1
+        if counter[_id] == 1:
+            new_block = Block(_id, self.depth + 1)
+        else:
+            new_block = Block(_id + str(counter[_id]), self.depth + 1)
+        return new_block
 
     def __str__(self):
         base = self.depth*TAB_OF_SPACES + self.name
