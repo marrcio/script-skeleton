@@ -120,14 +120,28 @@ Repeating this process will create all subsequent blocks. You can check the stat
 >>> ss.status()
 ```
 
-And also, you can always check the preview of an specific block or all the blocks:
+And also, you can always check the preview of an specific block:
 
 ```
->>> ss.preview()   # All that was completed so far
+>>> ss.preview()   # The last completed block
 >>> ss.preview(3)  # The block with number 3 it its name.
 ```
 
 Once done, everything can be saved to a 'filename.txt' with:
 ```
 ss.to_file('filename.txt')
+```
+
+## Templating
+
+An alternative to doing incremental work is writing all the changes in a file and run it with
+```
+$ python template.py
+```
+
+or
+```
+$ ipython
+>>> %run template.py
+>>> ss.preview() # or ss.status() or anything else.
 ```

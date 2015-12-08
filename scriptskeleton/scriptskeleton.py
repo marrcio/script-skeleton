@@ -60,6 +60,11 @@ class ScriptSkeleton:
         except StopIteration:
             print("All pages fed.")
 
+    def fuse_and_feed(self, string):
+        self.feed(string)
+        self.curr_block.fuse()
+        self.feed("0")
+
     def status(self):
         if self.curr_block is None:
             print("Still not started.")
@@ -102,6 +107,10 @@ class Block:
 
     def clean(self):
         self.children = []
+
+    def fuse(self):
+        num = int(re.search(r'\d+', self.name).group())
+        self.name = self.name + '-' + str(num+1)
 
     def feed(self, string):
         """Feeds from a string to create the hierarchy of one block."""
